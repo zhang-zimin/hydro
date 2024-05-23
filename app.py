@@ -1,8 +1,7 @@
 import streamlit as st
 
 
-# 定义一个全局变量来跟踪当前显示的页面
-current_page = '主页'
+
 
 # 设置全局属性
 st.set_page_config(
@@ -43,6 +42,13 @@ st.image('water-resources.jpg')
 
 st.title('title这么写')
 
+
+
+uploaded_file = st.file_uploader("上传文件", type=["csv", "json"])
+if uploaded_file:
+  st.write(f"你上传的文件是{uploaded_file.name}")
+
+
 with st.sidebar:
     st.title('欢迎来到水文计算平台')
     st.markdown('---')
@@ -51,9 +57,7 @@ with st.sidebar:
                 '，以实现高效和直观的工作流程。\n- 你无需编写HTML、CSS或JavaScript，就可以创建复杂的Web应用程序。\n- '
                 'Streamlit提供了多种组件和部件，如按钮、滑块、文本输入框等，这些都可以用于构建交互式应用程序，让用户与应用程序进行互动。')
 
-    if st.button('跳转到第二页'):
-        global current_page
-        current_page = '第二页'
+
 
 st.title('Python 不同的库实现图像读入成 numpy 数组')
 tab1, tab2, tab3 = st.tabs(['opencv', 'pillow', 'imageio'])
