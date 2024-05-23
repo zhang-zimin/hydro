@@ -9,13 +9,12 @@ st.set_page_config(
 
 # 正文
 st.title('hello world')
-st.markdown('> Streamlit 支持通过 st.markdown 直接渲染 markdown11111')
-st.columns([1, 2, 3])
-
+st.markdown('> Streamlit 支持通过 st.markdown 直接渲染 markdown')
+# st.markdonw('')
 
 
 with st.sidebar:
-    st.title('欢迎来到我的应用')
+    st.title('欢迎来到水文计算平台')
     st.markdown('---')
     st.markdown('这是它的特性：\n- feature 1\n- feature 2\n- feature 3')
 
