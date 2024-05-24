@@ -20,5 +20,3 @@ st.markdown("""
 2. 中小型水利水电工程地质勘察规范 (SL5X-XXXX)  
 """)
 
-# 链接
-st.markdown("[更多水利规范信息](https://example.com/water-resources-specs)")
