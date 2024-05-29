@@ -376,7 +376,7 @@ st.code(code, language="python")
 """
 
 
-
+st.markdown("[Pandas](https://cheat-sheet.cn/post/pandas-cheat-sheet/#pandas%E5%AE%89%E8%A3%85)")
 # '### Pandas'
 # 'Pandas 是一个强大的 Python 库，用于数据分析和数据处理。它提供了许多数据结构，如 Series（一维数组）和 DataFrame（二维表格），以及一系列用于数据清洗、转换、分析和可视化的方法。'
 # '#### Series'
