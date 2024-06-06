@@ -51,7 +51,7 @@ def tabshowinputdata(data):
         st.subheader('洪水过程线数据')
         st.dataframe(Flood_Hydrograph, use_container_width=True)
         st.subheader('设计洪水过程线')
-        st.line_chart(Flood_Hydrograph, x='t(h)', y='Q(m³)')
+        st.line_chart(Flood_Hydrograph, x='t(h)', y='Q(m³/s)')
 
     with tab2:
         st.subheader('水位库容数据')
@@ -93,8 +93,8 @@ def calculate(_water_init_level, _input_data):
     if st.button('进行计算'):
         st.subheader("计算结果")
         reservoir = Reservoir(_water_init_level, _input_data)
-        _result = reservoir.calculateoutflow()
-        _result = _result[['t' , 'Discharge']]
+        _result = reservoir.calculate_outflow()
+        _result = _result[['t', 'Discharge']]
         # 转为中文
         _result.rename(columns=column_mapping, inplace=True)
         # 展示计算结果

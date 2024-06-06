@@ -3,7 +3,7 @@ import math
 import pandas as pd
 
 
-def a(x, n, d=-99):
+def anstr3(x, n, d=-99):
     # x: 任意实数,待转换成n位有效数字的实数
     # n: 有效数字的位数
     # d: 小数点后位数，可缺省。
@@ -40,7 +40,7 @@ class Reservoir:
         self.input = dataframe  # 接收dataframe输入
         self.inithead = inithead  # 启调水位，用户输入
 
-    def calculateoutflow(self):
+    def calculate_outflow(self):
         Flood_Hydrograph = self.input[0].values
         Reservoir_Capacity = self.input[1].values
         Discharge_Curve = self.input[2].values
@@ -51,28 +51,29 @@ class Reservoir:
         Inflow[-1] = Inflow[0]
         Reservoir_Capacity_1 = zxcz(self.inithead, Reservoir_Capacity, 1) * 10000
 
-        _df = pd.DataFrame({'t': t,
-                            'Inflow': Inflow,
-                            'q': q,
-                            'Reservoir_Capacity': Reservoir_Capacity_1,
-                            'Reservoir_Level': self.inithead,
-                            'Calculated_Discharge': 0,
-                            'Discharge_Deviation': 0,
-                            'Discharge': 0})
+        dataframe = pd.DataFrame({'t': t,
+                                  'Inflow': Inflow,  # 入流量
+                                  'q': q,  # 出库 q
+                                  'Reservoir_Capacity': Reservoir_Capacity_1,  # 库容V
+                                  'Reservoir_Level': self.inithead,  # 库水位H
+                                  'Calculated_Discharge': 0,  # 出库q
+                                  'Discharge_Deviation': 0,  # 泄量误差
+                                  'Discharge': 0})
 
-        for i in range(1, len(_df)):
-            _df.iloc[i, 3] = _df.iloc[i - 1, 3] + (
-                    _df.iloc[i, 1] + _df.iloc[i - 1, 1] - _df.iloc[i, 2] - _df.iloc[i - 1, 2]) / 2 * (
-                                     _df.iloc[i, 0] - _df.iloc[i - 1, 0]) * 3600
-        for i in range(1, len(_df)):
-            _df.iloc[i, 4] = zxcz(_df.iloc[i, 3] / 10000, Reservoir_Capacity.tolist(), 2)
-        for i in range(1, len(_df)):
-            _df.iloc[i, 5] = zxcz(_df.iloc[i, 4], Discharge_Curve.tolist(), 1)
-        for i in range(1, len(_df)):
-            _df.iloc[i, 6] = _df.iloc[i, 2] - _df.iloc[i, 5]
-        for i in range(1, len(_df)):
-            _df.iloc[i, 7] = a(_df.iloc[i, 2], 3)
-        return _df
+        for i in range(1, len(dataframe)):
+            dataframe.iloc[i, 3] = dataframe.iloc[i - 1, 3] + (
+                    dataframe.iloc[i, 1] + dataframe.iloc[i - 1, 1] - dataframe.iloc[i, 2] - dataframe.iloc[
+                i - 1, 2]) / 2 * (
+                                           dataframe.iloc[i, 0] - dataframe.iloc[i - 1, 0]) * 3600
+        for i in range(1, len(dataframe)):
+            dataframe.iloc[i, 4] = zxcz(dataframe.iloc[i, 3] / 10000, Reservoir_Capacity.tolist(), 2)
+        for i in range(1, len(dataframe)):
+            dataframe.iloc[i, 5] = zxcz(dataframe.iloc[i, 4], Discharge_Curve.tolist(), 1)
+        for i in range(1, len(dataframe)):
+            dataframe.iloc[i, 6] = dataframe.iloc[i, 2] - dataframe.iloc[i, 5]
+        for i in range(1, len(dataframe)):
+            dataframe.iloc[i, 7] = anstr3(dataframe.iloc[i, 2], 3)
+        return dataframe
 
 
 if __name__ == "__main__":
@@ -85,5 +86,5 @@ if __name__ == "__main__":
     print(dfs[0].values)
     reservoir = Reservoir(500, dfs)
 
-    df = reservoir.calculateoutflow()
+    df = reservoir.calculate_outflow()
     print(df)
