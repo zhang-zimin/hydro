@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import math
 import pandas as pd
+import numpy as np
 
 
 def anstr3(x, n, d=-99):
@@ -36,9 +37,98 @@ def zxcz(t0, rg, l):
 
 
 class Reservoir:
+
     def __init__(self, inithead, dataframe):
         self.input = dataframe  # 接收dataframe输入
         self.inithead = inithead  # 启调水位，用户输入
+
+    def calculate_outflow2(self):
+        # 确保self.input包含正确的数据
+        if len(self.input) != 4:
+            raise ValueError("Input should contain 4 elements.")
+
+        Flood_Hydrograph = self.input[0].values
+        Reservoir_Capacity = self.input[1].values
+        Discharge_Curve = self.input[2].values
+        t = self.input[3]['t(h)']
+
+        dataframe = pd.DataFrame({'t': t,
+                                  'Inflow': 0,  # 入流量
+                                  'Reservoir_Level': self.inithead,  # 库水位H  初始化为起调水位
+                                  'Reservoir_Capacity': 0,  # 库容V
+                                  'q': 0,  # 出库 q
+                                  'verification_q': 0,
+                                  'Discharge_Deviation': 0,  # 泄量误差
+                                  'Discharge': 0})
+
+        # 计算入流量
+        dataframe["Inflow"] = dataframe["t"].apply(lambda _t: zxcz(_t, Flood_Hydrograph, 1))
+        # 计算库容列第一行
+        dataframe.loc[0, "Reservoir_Capacity"] = zxcz(self.inithead, Reservoir_Capacity, 1) * 10000
+        # 试算
+        threshold = 0.003
+        step = 0.001
+
+        Reservoir_Level_np = dataframe["Reservoir_Level"].astype(float).values
+        Reservoir_Capacity_np = dataframe["Reservoir_Capacity"].astype(float).values
+        verification_q_np = dataframe["verification_q"].astype(float).values
+        Discharge_Deviation_np = dataframe["Discharge_Deviation"].astype(float).values
+        q_np = dataframe["q"].astype(float).values
+        Inflow_np = dataframe["Inflow"].astype(float).values
+        time_np = dataframe["t"].astype(float).values
+        iteration_count = 0
+        optimalresult = np.zeros(7)
+        optimalresult[2] = 99
+        for i in range(1, len(Reservoir_Level_np)):
+            while 1:
+                iteration_count += 1
+                print(f"Iteration {iteration_count} completed.")
+                # 计算库容列其余行
+                Reservoir_Capacity_np[i] = Reservoir_Capacity_np[i - 1] + (
+                        Inflow_np[i] + Inflow_np[i - 1] - q_np[i] - q_np[i - 1]) / 2 * (
+                                                   time_np[i] - time_np[i - 1]) * 3600
+                # 计算库水位列
+                Reservoir_Level_np[i] = zxcz(Reservoir_Capacity_np[i] / 10000, Reservoir_Capacity, 2)
+                print(f"Reservoir_Level_np:{Reservoir_Level_np[i]}")
+                # 计算验算流量列
+                verification_q_np[i] = zxcz(Reservoir_Level_np[i], Discharge_Curve, 1)
+                print(f"verification_q_np[i]:{verification_q_np[i]}")
+                # 计算泄量误差
+                Discharge_Deviation_np[i] = np.abs(q_np[i] - verification_q_np[i])
+                print(f"verification_q_np[i]:{verification_q_np[i]}")
+
+                # 更新解域
+                if np.abs(Discharge_Deviation_np[i]) < optimalresult[2]:
+                    optimalresult[1] = q_np[i]
+                    optimalresult[2] = Discharge_Deviation_np[i]
+                    optimalresult[3] = Reservoir_Capacity_np[i]
+                    optimalresult[4] = verification_q_np[i]
+                    optimalresult[5] = Discharge_Deviation_np[i]
+                    optimalresult[6] = Reservoir_Level_np[i]
+
+                # 达到最大迭代深度或者误差降至0,装载最优解域
+                if q_np[i] >= Inflow_np[i-1]+10 or optimalresult[2] == 0:
+                    q_np[i] = optimalresult[1]
+                    Discharge_Deviation_np[i] = optimalresult[2]
+                    Reservoir_Capacity_np[i] = optimalresult[3]
+                    verification_q_np[i] = optimalresult[4]
+                    Discharge_Deviation_np[i] = optimalresult[5]
+                    Reservoir_Level_np[i] = optimalresult[6]
+                    optimalresult = np.zeros(7)
+                    optimalresult[2] = 99
+                    break
+
+                # 累进
+                q_np[i] += step
+                print(f"此时的流量{q_np[i]}")
+
+        dataframe["Reservoir_Level"] = Reservoir_Level_np  # 库水位列
+        dataframe["Reservoir_Capacity"] = Reservoir_Capacity_np
+        dataframe["verification_q"] = verification_q_np  # 验算流量列
+        dataframe["Discharge_Deviation"] = Discharge_Deviation_np  # 泄量误差列
+        dataframe["q"] = q_np  # 泄量
+
+        return dataframe
 
     def calculate_outflow(self):
         Flood_Hydrograph = self.input[0].values
@@ -83,8 +173,7 @@ if __name__ == "__main__":
     dfs.append(pd.read_excel(uploaded_file, sheet_name="Reservoir_Capacity", header=0))
     dfs.append(pd.read_excel(uploaded_file, sheet_name="Discharge_Curve", header=0))
     dfs.append(pd.read_excel(uploaded_file, sheet_name="Outflow", header=0))
-    print(dfs[0].values)
-    reservoir = Reservoir(500, dfs)
+    reservoir = Reservoir(526.5, dfs)
 
-    df = reservoir.calculate_outflow()
+    df = reservoir.calculate_outflow2()
     print(df)
