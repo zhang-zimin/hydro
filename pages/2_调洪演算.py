@@ -1,7 +1,6 @@
 from module.floodsim import Reservoir
 import streamlit as st
 import pandas as pd
-import altair as alt
 from pathlib import Path
 
 
@@ -28,24 +27,21 @@ def get_input_data(_file):
         dfs.append(pd.read_excel(uploaded_file, sheet_name="Flood_Hydrograph", header=0))
         dfs.append(pd.read_excel(uploaded_file, sheet_name="Reservoir_Capacity", header=0))
         dfs.append(pd.read_excel(uploaded_file, sheet_name="Discharge_Curve", header=0))
-        dfs.append(pd.read_excel(uploaded_file, sheet_name="Outflow", header=0))
+        dfs.append(pd.read_excel(uploaded_file, sheet_name="Time", header=0))
     else:
         st.error("不支持的文件类型")
         dfs = None
     return dfs
 
 
-
-
-
 def tabshowinputdata(data):
     Flood_Hydrograph = data[0]
     Reservoir_Capacity = data[1]
     Discharge_Curve = data[2]
-    Outflow = data[3]
+    time = data[3]
 
     st.header('输入数据展示')
-    tab1, tab2, tab3, tab4 = st.tabs(['洪水过程线', '库容曲线', '下泄曲线', '出库流量'])
+    tab1, tab2, tab3, tab4 = st.tabs(['洪水过程线', '库容曲线', '下泄曲线', '计算时间'])
 
     with tab1:
         st.subheader('洪水过程线数据')
@@ -66,10 +62,8 @@ def tabshowinputdata(data):
         st.line_chart(Discharge_Curve, x='上游水位(m)', y='总泄量Q(m³/s)')
 
     with tab4:
-        st.subheader('出库流量数据')
-        st.dataframe(Outflow, use_container_width=True)
-        st.subheader('出库流量线')
-        st.line_chart(Outflow, x='t(h)', y='q(m³)')
+        st.subheader('时间')
+        st.dataframe(time, use_container_width=True)
 
 
 def water_init_level():
@@ -83,9 +77,14 @@ def water_init_level():
             st.write('您输入的起调水位是', level)
         return level
 
+
 column_mapping = {
     't': '时间(h)',
-    'Discharge': '削峰后出库洪水过程'
+    'Inflow': '入流量(m3/s)',
+    'Reservoir_Level': '库水位H(m)',
+    'Reservoir_Capacity': '库容V(m3)',
+    'Discharge_Deviation': '误差',
+    'q': '出库流量(m3/s)'
 }
 
 
@@ -93,8 +92,9 @@ def calculate(_water_init_level, _input_data):
     if st.button('进行计算'):
         st.subheader("计算结果")
         reservoir = Reservoir(_water_init_level, _input_data)
-        _result = reservoir.calculate_outflow()
-        _result = _result[['t', 'Discharge']]
+        _result = reservoir.calculate_outflow2()
+        # _result = _result[['t', 'Discharge']]
+        _result = _result.drop(columns=['verification_q'])
         # 转为中文
         _result.rename(columns=column_mapping, inplace=True)
         # 展示计算结果
@@ -109,7 +109,7 @@ def explain():
 def plot_a_chart(df):
     if df is not None:
         st.subheader("削峰后出库洪水过程")
-        st.line_chart(df, x='时间(h)', y='削峰后出库洪水过程')
+        st.line_chart(df, x='时间(h)', y='出库流量(m3/s)')
 
         # cols = st.multiselect(
         #     "选择您想查看的列", list(df.columns), ["时间", "水库库容"]
