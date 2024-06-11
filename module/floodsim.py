@@ -57,9 +57,9 @@ class Reservoir:
                                   'Reservoir_Level': self.inithead,  # 库水位H  初始化为起调水位
                                   'Reservoir_Capacity': 0,  # 库容V
                                   'q': 0,  # 出库 q
-                                  'verification_q': 0,
-                                  'Discharge_Deviation': 0,  # 泄量误差
-                                  'Discharge': 0})
+                                  'verification_q': 0,  # 验算q
+                                  'Discharge_Deviation': 0  # 泄量误差
+                                  })
 
         # 计算入流量
         dataframe["Inflow"] = dataframe["t"].apply(lambda _t: zxcz(_t, Flood_Hydrograph, 1))
@@ -80,6 +80,7 @@ class Reservoir:
         optimalresult = np.zeros(7)
         optimalresult[2] = 99
         for i in range(1, len(Reservoir_Level_np)):
+        # for i in range(1, 3):  # 调试用
             while 1:
                 iteration_count += 1
                 print(f"Iteration {iteration_count} completed.")
@@ -167,13 +168,14 @@ class Reservoir:
 
 
 if __name__ == "__main__":
-    dfs = []
-    uploaded_file = r'D:\Devfile\hydro-sty\resources\input.xlsx'
-    dfs.append(pd.read_excel(uploaded_file, sheet_name="Flood_Hydrograph", header=0))
-    dfs.append(pd.read_excel(uploaded_file, sheet_name="Reservoir_Capacity", header=0))
-    dfs.append(pd.read_excel(uploaded_file, sheet_name="Discharge_Curve", header=0))
-    dfs.append(pd.read_excel(uploaded_file, sheet_name="Outflow", header=0))
-    reservoir = Reservoir(526.5, dfs)
-
-    df = reservoir.calculate_outflow2()
-    print(df)
+    pass
+    # dfs = []
+    # uploaded_file = r'/resources/input.xlsx'
+    # dfs.append(pd.read_excel(uploaded_file, sheet_name="Flood_Hydrograph", header=0))
+    # dfs.append(pd.read_excel(uploaded_file, sheet_name="Reservoir_Capacity", header=0))
+    # dfs.append(pd.read_excel(uploaded_file, sheet_name="Discharge_Curve", header=0))
+    # dfs.append(pd.read_excel(uploaded_file, sheet_name="Outflow", header=0))
+    # reservoir = Reservoir(526.5, dfs)
+    #
+    # df = reservoir.calculate_outflow2()
+    # print(df)
