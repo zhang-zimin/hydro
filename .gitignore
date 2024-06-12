@@ -7,3 +7,8 @@
 resources/~$input.xlsx
 
 module/__pycache__/
+
+
+myvenv/
+
+nohup.out
