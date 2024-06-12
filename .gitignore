@@ -9,6 +9,6 @@ resources/~$input.xlsx
 module/__pycache__/
 
 
-myvenv/
+/myenv/
 
 nohup.out
