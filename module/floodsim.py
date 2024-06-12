@@ -83,20 +83,20 @@ class Reservoir:
         # for i in range(1, 3):  # 调试用
             while 1:
                 iteration_count += 1
-                print(f"Iteration {iteration_count} completed.")
+                # print(f"Iteration {iteration_count} completed.")
                 # 计算库容列其余行
                 Reservoir_Capacity_np[i] = Reservoir_Capacity_np[i - 1] + (
                         Inflow_np[i] + Inflow_np[i - 1] - q_np[i] - q_np[i - 1]) / 2 * (
                                                    time_np[i] - time_np[i - 1]) * 3600
                 # 计算库水位列
                 Reservoir_Level_np[i] = zxcz(Reservoir_Capacity_np[i] / 10000, Reservoir_Capacity, 2)
-                print(f"Reservoir_Level_np:{Reservoir_Level_np[i]}")
+                # print(f"Reservoir_Level_np:{Reservoir_Level_np[i]}")
                 # 计算验算流量列
                 verification_q_np[i] = zxcz(Reservoir_Level_np[i], Discharge_Curve, 1)
-                print(f"verification_q_np[i]:{verification_q_np[i]}")
+                # print(f"verification_q_np[i]:{verification_q_np[i]}")
                 # 计算泄量误差
                 Discharge_Deviation_np[i] = np.abs(q_np[i] - verification_q_np[i])
-                print(f"verification_q_np[i]:{verification_q_np[i]}")
+                # print(f"verification_q_np[i]:{verification_q_np[i]}")
 
                 # 更新解域
                 if np.abs(Discharge_Deviation_np[i]) < optimalresult[2]:
@@ -121,7 +121,7 @@ class Reservoir:
 
                 # 累进
                 q_np[i] += step
-                print(f"此时的流量{q_np[i]}")
+                # print(f"此时的流量{q_np[i]}")
 
         dataframe["Reservoir_Level"] = Reservoir_Level_np  # 库水位列
         dataframe["Reservoir_Capacity"] = Reservoir_Capacity_np
@@ -170,11 +170,11 @@ class Reservoir:
 if __name__ == "__main__":
     pass
     # dfs = []
-    # uploaded_file = r'/resources/input.xlsx'
+    # uploaded_file = r'D:\Devfile\hydro-sty\resources\input.xlsx'
     # dfs.append(pd.read_excel(uploaded_file, sheet_name="Flood_Hydrograph", header=0))
     # dfs.append(pd.read_excel(uploaded_file, sheet_name="Reservoir_Capacity", header=0))
     # dfs.append(pd.read_excel(uploaded_file, sheet_name="Discharge_Curve", header=0))
-    # dfs.append(pd.read_excel(uploaded_file, sheet_name="Outflow", header=0))
+    # dfs.append(pd.read_excel(uploaded_file, sheet_name="Time", header=0))
     # reservoir = Reservoir(526.5, dfs)
     #
     # df = reservoir.calculate_outflow2()
