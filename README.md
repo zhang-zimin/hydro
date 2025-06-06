@@ -17,9 +17,45 @@
 - Altair (数据可视化)
 - Docker
 
-## 安装说明
+## 快速开始
 
-### 方法一：直接安装
+### 方法一：使用Docker（推荐）
+
+1. 拉取Docker镜像
+```bash
+docker pull zhangzimin/hydro:latest
+```
+
+2. 运行容器
+```bash
+docker run -d -p 8501:8501 --name hydro zhangzimin/hydro:latest
+```
+
+3. 访问应用
+打开浏览器访问 http://localhost:8501
+
+4. 常用Docker命令
+```bash
+# 查看容器状态
+docker ps
+
+# 查看容器日志
+docker logs hydro
+
+# 停止容器
+docker stop hydro
+
+# 启动容器
+docker start hydro
+
+# 删除容器
+docker rm hydro
+
+# 删除镜像
+docker rmi zhangzimin/hydro:latest
+```
+
+### 方法二：直接安装
 
 #### 环境要求
 - Python 3.8+
@@ -45,41 +81,12 @@ source venv/bin/activate  # Linux/Mac
 pip install -r requirements.txt
 ```
 
-### 方法二：使用Docker
-
-#### 环境要求
-- Docker
-
-#### 安装步骤
-1. 构建Docker镜像
-```bash
-docker build -t hydro:latest .
-```
-
-2. 运行Docker容器
-```bash
-docker run -d -p 8501:8501 --name hydro hydro:latest
-```
-
-## 使用说明
-1. 直接运行
+4. 运行应用
 ```bash
 streamlit run app.py
 ```
 
-2. Docker运行
-```bash
-# 启动容器
-docker start hydro
-
-# 停止容器
-docker stop hydro
-
-# 查看容器日志
-docker logs hydro
-```
-
-3. 在浏览器中访问
+5. 在浏览器中访问
 默认情况下，应用将在 http://localhost:8501 运行
 
 ## 项目结构
