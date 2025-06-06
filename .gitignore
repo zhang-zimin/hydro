@@ -12,3 +12,7 @@ module/__pycache__/
 /myenv/
 
 nohup.out
+/v/
+/.v/
+
+require.txt
