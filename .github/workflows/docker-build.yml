@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 env:
-  DOCKER_IMAGE: zhang-zimin/hydro
+  DOCKER_IMAGE: zhangzimin/hydro
 
 jobs:
   build-and-push:
@@ -24,6 +24,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Debug Info
+        run: |
+          echo "Docker Hub Username: ${{ secrets.DOCKERHUB_USERNAME }}"
+          echo "Docker Image: ${{ env.DOCKER_IMAGE }}"
+          docker info
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
