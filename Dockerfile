@@ -17,4 +17,4 @@ EXPOSE 8501
 ENV PYTHONUNBUFFERED=1
 
 # 启动命令
-CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=localhost"] 
+CMD ["streamlit", "run", "app.py"] 
